@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moto Zone - Login | Spare Parts Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #1f293d;
+      --border: rgba(255,255,255,0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99,102,241,0.25);
+      --text: #f3f4f6;
+      --sub: #9ca3af;
+      --input-bg: #0f172a;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.15) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.1) 0%, transparent 50%),
+                  radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 60%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes bgPulse {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.05) rotate(2deg); }
+    }
+
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+    }
+
+    /* Brand Logo */
+    .login-brand {
+      text-align: center;
+      margin-bottom: 36px;
+      animation: slideDown 0.6s ease;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .login-brand-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 32px var(--primary-glow);
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+    @keyframes iconPulse {
+      0%, 100% { box-shadow: 0 8px 32px var(--primary-glow); }
+      50% { box-shadow: 0 8px 48px rgba(99,102,241,0.45); }
+    }
+    .login-brand h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .login-brand p {
+      font-size: 0.9rem;
+      color: var(--sub);
+      margin-top: 4px;
+    }
+
+    /* Login Card */
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+      animation: slideUp 0.6s ease 0.1s both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .login-card h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+    .login-card p {
+      font-size: 0.88rem;
+      color: var(--sub);
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--sub);
+      margin-bottom: 8px;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    .input-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--sub);
+      font-size: 0.95rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 13px 14px 13px 42px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.25s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+    .form-input::placeholder { color: #4b5563; }
+
+    /* Password toggle */
+    .toggle-pass {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--sub);
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(244,63,94,0.12);
+      border: 1px solid rgba(244,63,94,0.3);
+      color: #fb7185;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+    .error-msg.show { display: flex; }
+
+    /* Submit Button */
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.5px;
+    }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-login .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-login.loading .spinner { display: block; }
+    .btn-login.loading .btn-text { display: none; }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer note */
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.82rem;
+      color: var(--sub);
+    }
+    .login-footer strong { color: var(--emerald); }
+
+    /* Decorative dots */
+    .dots {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .dot {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.4);
+      animation: floatDot linear infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="dots" id="dotsContainer"></div>
+
+  <div class="login-wrapper">
+    <div class="login-brand">
+      <div class="login-brand-icon">
+        <i class="fa-solid fa-gears"></i>
+      </div>
+      <h1>Moto Zone Workshop</h1>
+      <p>Spare Parts & Stock Management System</p>
+    </div>
+
+    <div class="login-card">
+      <h2>স্বাগতম! <span>👋</span></h2>
+      <p>আপনার অ্যাকাউন্টে লগইন করুন</p>
+
+      <div class="error-msg" id="errorMsg">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="errorText">Email বা Password সঠিক নয়!</span>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="loginPassword" class="form-input" placeholder="আপনার পাসওয়ার্ড দিন" required autocomplete="current-password">
+            <button type="button" class="toggle-pass" id="togglePass">
+              <i class="fa-solid fa-eye" id="togglePassIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <div class="spinner"></div>
+          <span class="btn-text"><i class="fa-solid fa-right-to-bracket"></i> লগইন করুন</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="login-footer">
+      <strong><i class="fa-solid fa-shield-halved"></i> Secured by Firebase Auth</strong>
+      &nbsp;•&nbsp; Moto Zone Workshop &copy; 2026
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAwNoEgIknQTX6EQ4WYN66ls5YGp7Ii0yg",
+      authDomain: "moto-zone-stock.firebaseapp.com",
+      projectId: "moto-zone-stock",
+      storageBucket: "moto-zone-stock.firebasestorage.app",
+      messagingSenderId: "843038006376",
+      appId: "1:843038006376:web:fdcc2d6e6d42d572872fdd"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // If already logged in, go to dashboard
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    // Animated dots
+    const dotsContainer = document.getElementById('dotsContainer');
+    for (let i = 0; i < 20; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        animation-duration: ${4 + Math.random() * 6}s;
+        animation-delay: ${Math.random() * 5}s;
+        opacity: ${0.2 + Math.random() * 0.5};
+        width: ${2 + Math.random() * 4}px;
+        height: ${2 + Math.random() * 4}px;
+      `;
+      dotsContainer.appendChild(dot);
+    }
+
+    // Toggle Password
+    document.getElementById('togglePass').addEventListener('click', () => {
+      const input = document.getElementById('loginPassword');
+      const icon = document.getElementById('togglePassIcon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    });
+
+    // Login Form Submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      const errorMsg = document.getElementById('errorMsg');
+      const errorText = document.getElementById('errorText');
+
+      btn.classList.add('loading');
+      btn.disabled = true;
+      errorMsg.classList.remove('show');
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        window.location.href = 'index.html';
+      } catch (err) {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        
+        const msgs = {
+          'auth/user-not-found': 'এই Email দিয়ে কোনো অ্যাকাউন্ট নেই!',
+          'auth/wrong-password': 'Password ভুল আছে! আবার চেষ্টা করুন।',
+          'auth/invalid-email': 'সঠিক Email ফরম্যাট দিন।',
+          'auth/too-many-requests': 'বারবার ভুল দেওয়ায় অ্যাকাউন্ট সাময়িক বন্ধ। কিছুক্ষণ পর চেষ্টা করুন।',
+          'auth/invalid-credential': 'Email বা Password সঠিক নয়!'
+        };
+        errorText.textContent = msgs[err.code] || 'লগইন করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।';
+        errorMsg.classList.add('show');
+      }
+    });
+  </script>
+</body>
+</html>
