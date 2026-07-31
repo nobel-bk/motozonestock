@@ -64,6 +64,7 @@
     } else {
       document.getElementById('authGate')?.classList.remove('hidden');
       document.getElementById('mainApp')?.classList.add('hidden');
+      window.location.href = 'login.html';
     }
   });
 
@@ -717,3 +718,17 @@
   });
 
   // =====================================================
+  // TOAST
+  // =====================================================
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', info: 'fa-circle-info' };
+    toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> <span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4500);
+  }
+
+})();
