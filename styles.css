@@ -235,8 +235,48 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  margin-bottom: 16px;
 }
 @media (min-width: 768px) { .chart-grid { grid-template-columns: 2fr 1fr; } }
+
+/* ---- DASHBOARD WELCOME BAR ---- */
+.dash-welcome-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+.dash-welcome-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.dash-welcome-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.dash-quick-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---- DASHBOARD BOTTOM GRID ---- */
+.dash-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+@media (min-width: 768px) { .dash-bottom-grid { grid-template-columns: 1fr 1fr; } }
 
 /* ---- TOOLBAR ---- */
 .toolbar {
