@@ -364,14 +364,25 @@
         <!-- Drop Zone -->
         <div class="drop-zone" id="excelDropZone">
           <div class="drop-icon"><i class="fa-solid fa-file-excel"></i></div>
-          <h3>Excel ফাইল এখানে ড্রপ করুন</h3>
-          <p>(.xls, .xlsx, .csv)</p>
+          <h3>Excel (.xls, .xlsx, .csv) ফাইল নির্বাচন করুন বা এখানে ড্রপ করুন</h3>
+          <p class="text-sub">হিরো পোর্টাল থেকে ডাউনলোড করা Parts Receive বা Warehouse Stock Report ফাইল</p>
           <input type="file" id="excelFileInput" accept=".xls,.xlsx,.csv" class="hidden">
           <button class="btn btn-primary mt-3" id="btnSelectExcelFile">
             <i class="fa-solid fa-folder-open"></i> ফাইল নির্বাচন
           </button>
         </div>
-        <p id="selectedFileName" style="text-align:center;margin-top:8px;font-size:0.85rem;color:#64748b;"></p>
+
+        <div id="importActionBox" class="card p-4 mt-3" style="display:none;background:var(--bg);border:1px solid var(--border);">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span style="font-weight:700;color:var(--primary);" id="selectedFileName">📂 কোনো ফাইল সিলেক্ট করা হয়নি</span>
+              <p style="font-size:0.8rem;color:var(--text-sub);margin-top:2px;">ফাইল সিলেক্ট সম্পন্ন হয়েছে। এখন নিচের বাটনে চাপ দিয়ে আপলোড শুরু করুন।</p>
+            </div>
+            <button class="btn btn-emerald btn-lg" id="btnStartImport">
+              <i class="fa-solid fa-cloud-arrow-up"></i> সিঙ্ক ও আপলোড শুরু করুন
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
