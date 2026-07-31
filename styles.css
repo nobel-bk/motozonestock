@@ -44,6 +44,8 @@ body {
   font-size: 14px;
   line-height: 1.6;
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .hidden { display: none !important; }
@@ -52,6 +54,11 @@ body {
 .p-4 { padding: 16px; }
 .p-6 { padding: 24px; }
 .text-sub { color: var(--text-sub); }
+
+/* Prevent Grid & Flex Children Overflow Cutoff */
+.kpi-grid > *, .chart-grid > *, .dash-bottom-grid > *, .card {
+  min-width: 0;
+}
 
 /* ---- AUTH GATE ---- */
 .auth-gate {
@@ -179,6 +186,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 .card-header {
   padding: 14px 16px;
@@ -194,11 +202,10 @@ body {
 /* ---- KPI GRID ---- */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
-@media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .kpi-card {
   background: var(--surface);
@@ -209,6 +216,7 @@ body {
   align-items: center;
   gap: 14px;
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 .kpi-icon {
   width: 48px; height: 48px;
@@ -237,9 +245,10 @@ body {
   gap: 16px;
   margin-bottom: 16px;
 }
-@media (min-width: 768px) { .chart-grid { grid-template-columns: 2fr 1fr; } }
+@media (min-width: 900px) { .chart-grid { grid-template-columns: 2fr 1fr; } }
 .chart-grid canvas {
-  max-height: 220px !important;
+  max-height: 240px !important;
+  width: 100% !important;
 }
 
 /* ---- DASHBOARD WELCOME BAR ---- */
