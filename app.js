@@ -293,18 +293,32 @@
       STATE.charts.top = new Chart(ctx1, {
         type: 'bar',
         data: {
-          labels: topParts.map(p => p.partNo?.slice(0, 12) || 'N/A'),
+          labels: topParts.map(p => (p.partNo || 'N/A') + (p.description ? ' (' + p.description.slice(0, 15) + '...)' : '')),
           datasets: [{
-            label: 'Stock Qty',
+            label: 'স্টক পরিমাণ (পিস)',
             data: topParts.map(p => parseInt(p.qty) || 0),
-            backgroundColor: 'rgba(225,29,72,0.7)',
+            backgroundColor: 'rgba(225, 29, 72, 0.85)',
+            borderColor: '#e11d48',
+            borderWidth: 1,
             borderRadius: 6
           }]
         },
         options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true } }
+          indexAxis: 'y', // Horizontal bars for clear, spacious reading!
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` স্টক পরিমাণ: ${ctx.raw} পিস`
+              }
+            }
+          },
+          scales: {
+            x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            y: { grid: { display: false } }
+          }
         }
       });
     }
@@ -703,17 +717,3 @@
   });
 
   // =====================================================
-  // TOAST
-  // =====================================================
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', info: 'fa-circle-info' };
-    toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> <span>${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4500);
-  }
-
-})();
