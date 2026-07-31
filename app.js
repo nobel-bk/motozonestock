@@ -78,7 +78,37 @@
     initTabs();
     initStockTab();
     initImportTab();
+    initDashQuickActions();
     loadParts();
+  }
+
+  function initDashQuickActions() {
+    const dateStrEl = document.getElementById('dashDateStr');
+    if (dateStrEl) {
+      const now = new Date();
+      dateStrEl.textContent = 'আজ: ' + now.toLocaleDateString('bn-BD', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    const nameEl = document.getElementById('dashUserName');
+    if (nameEl && auth.currentUser) {
+      nameEl.textContent = auth.currentUser.email ? auth.currentUser.email.split('@')[0] : 'Manager';
+    }
+
+    const switchTab = (tabName) => {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        if (b.dataset.tab === tabName) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById('tab-' + tabName)?.classList.remove('hidden');
+    };
+
+    document.getElementById('btnDashAddPart')?.addEventListener('click', () => {
+      switchTab('stock');
+      document.getElementById('btnAddPart')?.click();
+    });
+    document.getElementById('btnDashGoImport')?.addEventListener('click', () => switchTab('import'));
+    document.getElementById('btnDashGoReport')?.addEventListener('click', () => switchTab('reports'));
   }
 
   // =====================================================
@@ -119,6 +149,7 @@
     renderStockTable(STATE.filtered);
     renderCharts();
     renderLowStockAlert();
+    renderDashTopValueTable();
   }
 
   // =====================================================
@@ -136,27 +167,57 @@
     if (g('kpiTotalStock')) g('kpiTotalStock').textContent = totalStock.toLocaleString();
     if (g('kpiLowStock'))   g('kpiLowStock').textContent   = lowStock;
     if (g('kpiTotalValue')) g('kpiTotalValue').textContent = '৳' + Math.round(totalValue).toLocaleString();
+    if (g('lowStockCount')) g('lowStockCount').textContent = lowStock;
   }
 
   // =====================================================
   // LOW STOCK ALERT
   // =====================================================
   function renderLowStockAlert() {
-    const alertBox = document.getElementById('lowStockAlertBox');
     const listEl = document.getElementById('lowStockList');
-    if (!alertBox || !listEl) return;
+    if (!listEl) return;
 
     const lowItems = STATE.parts.filter(p => (parseInt(p.qty) || 0) <= 2);
-    if (lowItems.length === 0) { alertBox.style.display = 'none'; return; }
+    if (lowItems.length === 0) {
+      listEl.innerHTML = '<p style="padding:16px;text-align:center;color:#10b981;font-size:0.85rem;"><i class="fa-solid fa-circle-check"></i> সব পার্টস পর্যাপ্ত পরিমাণে স্টকে আছে!</p>';
+      return;
+    }
 
-    alertBox.style.display = 'block';
-    listEl.innerHTML = lowItems.map(p =>
-      `<div style="padding:4px 0;border-bottom:1px solid #fed7aa;display:flex;gap:12px;">
-        <strong style="min-width:160px;">${p.partNo}</strong>
-        <span style="flex:1;">${p.description || '-'}</span>
-        <span class="badge badge-red">${p.qty || 0} পিস</span>
-      </div>`
-    ).join('');
+    listEl.innerHTML = lowItems.map(p => {
+      const q = parseInt(p.qty) || 0;
+      const bClass = q === 0 ? 'badge-red' : 'badge-amber';
+      return `<div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div>
+          <strong style="font-size:0.82rem;display:block;">${p.partNo}</strong>
+          <span style="font-size:0.78rem;color:var(--text-sub);">${p.description || '-'}</span>
+        </div>
+        <span class="badge ${bClass}">${q === 0 ? 'আউট অব স্টক' : q + ' পিস বাকি'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderDashTopValueTable() {
+    const tbody = document.getElementById('dashTopValueTable');
+    if (!tbody) return;
+
+    const topValueParts = [...STATE.parts]
+      .map(p => ({ ...p, totalVal: (parseInt(p.qty) || 0) * (parseFloat(p.unitPrice) || 0) }))
+      .sort((a, b) => b.totalVal - a.totalVal)
+      .slice(0, 6);
+
+    if (topValueParts.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#94a3b8;">কোনো ডাটা নেই</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = topValueParts.map(p => `
+      <tr>
+        <td><strong>${p.partNo}</strong></td>
+        <td>${p.description ? p.description.slice(0, 20) + '...' : '-'}</td>
+        <td style="text-align:center;">${p.qty || 0}</td>
+        <td><strong>৳ ${Math.round(p.totalVal).toLocaleString()}</strong></td>
+      </tr>
+    `).join('');
   }
 
   // =====================================================
