@@ -294,31 +294,32 @@
       STATE.charts.top = new Chart(ctx1, {
         type: 'bar',
         data: {
-          labels: topParts.map(p => (p.partNo || 'N/A') + (p.description ? ' (' + p.description.slice(0, 15) + '...)' : '')),
+          labels: topParts.map(p => p.partNo ? p.partNo.slice(0, 10) : 'N/A'),
           datasets: [{
-            label: 'স্টক পরিমাণ (পিস)',
+            label: 'স্টক পরিমাণ',
             data: topParts.map(p => parseInt(p.qty) || 0),
             backgroundColor: 'rgba(225, 29, 72, 0.85)',
-            borderColor: '#e11d48',
-            borderWidth: 1,
-            borderRadius: 6
+            borderRadius: 6,
+            barThickness: 22
           }]
         },
         options: {
-          indexAxis: 'y', // Horizontal bars for clear, spacious reading!
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: ctx => ` স্টক পরিমাণ: ${ctx.raw} পিস`
+                title: items => {
+                  const idx = items[0].dataIndex;
+                  return `${topParts[idx].partNo}: ${topParts[idx].description || ''}`;
+                }
               }
             }
           },
           scales: {
-            x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-            y: { grid: { display: false } }
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
           }
         }
       });
