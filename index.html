@@ -74,6 +74,21 @@
 
     <!-- ===== TAB: DASHBOARD ===== -->
     <div id="tab-dashboard" class="tab-panel">
+
+      <!-- Welcome Bar -->
+      <div class="dash-welcome-bar">
+        <div>
+          <h2 class="dash-welcome-title">স্বাগতম, <span id="dashUserName">Manager</span> 👋</h2>
+          <p class="dash-welcome-sub" id="dashDateStr"></p>
+        </div>
+        <div class="dash-quick-actions">
+          <button class="btn btn-primary" id="btnDashAddPart"><i class="fa-solid fa-plus"></i> নতুন পার্টস</button>
+          <button class="btn btn-outline" id="btnDashGoImport"><i class="fa-solid fa-file-excel"></i> Excel Import</button>
+          <button class="btn btn-emerald" id="btnDashGoReport"><i class="fa-solid fa-file-pdf"></i> রিপোর্ট</button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-icon" style="background:rgba(225,29,72,0.1);color:#e11d48;"><i class="fa-solid fa-boxes-stacked"></i></div>
@@ -89,7 +104,7 @@
             <div class="kpi-label">মোট স্টক (পিস)</div>
           </div>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card" style="border-left:3px solid #f59e0b;">
           <div class="kpi-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="fa-solid fa-triangle-exclamation"></i></div>
           <div>
             <div class="kpi-value" id="kpiLowStock">—</div>
@@ -100,29 +115,59 @@
           <div class="kpi-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="fa-solid fa-bangladeshi-taka-sign"></i></div>
           <div>
             <div class="kpi-value" id="kpiTotalValue">—</div>
-            <div class="kpi-label">মোট স্টক মূল্য (৳)</div>
+            <div class="kpi-label">মোট স্টক মূল্য</div>
           </div>
         </div>
       </div>
 
-      <!-- Low Stock Alert -->
-      <div class="card mb-4" id="lowStockAlertBox" style="display:none;">
-        <div class="card-header" style="background:#fff7ed;border-bottom:1px solid #fed7aa;">
-          <h4 style="color:#ea580c;"><i class="fa-solid fa-triangle-exclamation"></i> লো-স্টক সতর্কতা</h4>
-        </div>
-        <div id="lowStockList" style="padding:12px 16px;font-size:0.85rem;"></div>
-      </div>
-
-      <!-- Charts -->
+      <!-- Charts Row -->
       <div class="chart-grid">
         <div class="card p-4">
-          <h4 class="card-title">শীর্ষ ১০ পার্টস (স্টক)</h4>
-          <canvas id="chartTopParts" height="280"></canvas>
+          <h4 class="card-title"><i class="fa-solid fa-chart-bar" style="color:#e11d48;margin-right:6px;"></i>শীর্ষ ১০ পার্টস (স্টক পরিমাণ)</h4>
+          <canvas id="chartTopParts" height="260"></canvas>
         </div>
         <div class="card p-4">
-          <h4 class="card-title">স্টক স্ট্যাটাস বিভাজন</h4>
-          <canvas id="chartStockStatus" height="280"></canvas>
+          <h4 class="card-title"><i class="fa-solid fa-chart-pie" style="color:#2563eb;margin-right:6px;"></i>স্টক স্ট্যাটাস বিভাজন</h4>
+          <canvas id="chartStockStatus" height="260"></canvas>
         </div>
+      </div>
+
+      <!-- Bottom Row: Low Stock Alert + Recent Parts -->
+      <div class="dash-bottom-grid">
+
+        <!-- Low Stock Alert Table -->
+        <div class="card" id="lowStockAlertBox">
+          <div class="card-header" style="background:#fff7ed;border-bottom:1px solid #fed7aa;display:flex;align-items:center;justify-content:space-between;">
+            <h4 style="color:#ea580c;font-size:0.9rem;"><i class="fa-solid fa-triangle-exclamation"></i> লো-স্টক সতর্কতা</h4>
+            <span id="lowStockCount" class="badge badge-amber">0</span>
+          </div>
+          <div id="lowStockList" style="padding:0;max-height:280px;overflow-y:auto;">
+            <p style="padding:20px;text-align:center;color:#94a3b8;font-size:0.85rem;">লোড হচ্ছে...</p>
+          </div>
+        </div>
+
+        <!-- Top Value Parts Table -->
+        <div class="card">
+          <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <h4 style="font-size:0.9rem;"><i class="fa-solid fa-star" style="color:#f59e0b;margin-right:4px;"></i>সর্বোচ্চ মূল্যের পার্টস</h4>
+          </div>
+          <div style="max-height:280px;overflow-y:auto;">
+            <table class="data-table" style="font-size:0.78rem;">
+              <thead>
+                <tr>
+                  <th>Parts No</th>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>মোট মূল্য</th>
+                </tr>
+              </thead>
+              <tbody id="dashTopValueTable">
+                <tr><td colspan="4" style="text-align:center;padding:20px;color:#94a3b8;">লোড হচ্ছে...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
 
