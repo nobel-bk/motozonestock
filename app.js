@@ -688,16 +688,6 @@
     };
     reader.readAsArrayBuffer(file);
   }
-        if (updated) msg += ` 🔄 ${updated}টি পার্টস আপডেট (${syncQtyMethod === 'add' ? 'যোগফল' : 'সেট'} মোড)।`;
-        showToast(msg, 'success');
-        if (nameEl) nameEl.textContent = '';
-      } catch (err) {
-        console.error(err);
-        showToast('ফাইল প্রক্রিয়াকরণে সমস্যা! ফরম্যাট চেক করুন।', 'error');
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  }
 
   // =====================================================
   // REPORT / INVOICE GENERATOR
