@@ -237,7 +237,10 @@ body {
   gap: 16px;
   margin-bottom: 16px;
 }
-@media (min-width: 768px) { .chart-grid { grid-template-columns: 2fr 1fr; } }
+@media (min-width: 900px) { .chart-grid { grid-template-columns: 1.6fr 1fr; } }
+.chart-grid canvas {
+  min-height: 280px;
+}
 
 /* ---- DASHBOARD WELCOME BAR ---- */
 .dash-welcome-bar {
@@ -676,6 +679,3 @@ body {
   .top-bar { padding: 8px 12px; }
   .main-content { padding: 12px 10px; }
   .kpi-value { font-size: 1.2rem; }
-  .niloy-hero-header { grid-template-columns: auto 1fr; }
-  .hero-brand-box { display: none; }
-}
