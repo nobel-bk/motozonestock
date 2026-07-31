@@ -491,6 +491,9 @@
   // =====================================================
   // EXCEL IMPORT (SMART SYNC)
   // =====================================================
+  // =====================================================
+  // EXCEL IMPORT (SMART SYNC)
+  // =====================================================
   function initImportTab() {
     const dropZone = document.getElementById('excelDropZone');
     const fileInput = document.getElementById('excelFileInput');
@@ -499,37 +502,82 @@
       e.stopPropagation();
       fileInput?.click();
     });
-    fileInput?.addEventListener('change', e => handleExcelFile(e.target.files[0]));
+
+    fileInput?.addEventListener('change', e => onFileSelected(e.target.files[0]));
 
     dropZone?.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
     dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
     dropZone?.addEventListener('drop', e => {
       e.preventDefault();
       dropZone.classList.remove('dragover');
-      handleExcelFile(e.dataTransfer.files[0]);
+      onFileSelected(e.dataTransfer.files[0]);
     });
-    dropZone?.addEventListener('click', () => fileInput?.click());
+
+    document.getElementById('btnStartImport')?.addEventListener('click', () => {
+      if (STATE.selectedFile) {
+        processExcelFile(STATE.selectedFile);
+      } else {
+        showToast('প্রথমে একটি Excel ফাইল নির্বাচন করুন!', 'error');
+      }
+    });
   }
 
-  async function handleExcelFile(file) {
+  function onFileSelected(file) {
     if (!file) return;
+    STATE.selectedFile = file;
     const nameEl = document.getElementById('selectedFileName');
-    if (nameEl) nameEl.textContent = '📂 ' + file.name;
+    const boxEl  = document.getElementById('importActionBox');
+    if (nameEl) nameEl.textContent = '📂 ' + file.name + ` (${(file.size / 1024).toFixed(1)} KB)`;
+    if (boxEl)  boxEl.style.display = 'block';
+    showToast(`ফাইল তৈরি: ${file.name}। এখন 'সিঙ্ক ও আপলোড শুরু করুন' বাটনে চাপ দিন।`, 'info');
+  }
 
-    const importMode  = document.querySelector('input[name="importMode"]:checked')?.value  || 'smart_sync';
+  async function processExcelFile(file) {
+    if (!file) return;
+    const importMode    = document.querySelector('input[name="importMode"]:checked')?.value  || 'smart_sync';
     const syncQtyMethod = document.querySelector('input[name="syncQtyMethod"]:checked')?.value || 'add';
+
+    const btnStart = document.getElementById('btnStartImport');
+    if (btnStart) {
+      btnStart.disabled = true;
+      btnStart.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> আপলোড ও সিঙ্ক হচ্ছে...';
+    }
 
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
         const data = new Uint8Array(e.target.result);
         const wb = XLSX.read(data, { type: 'array' });
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet);
+        const sheetName = wb.SheetNames[0];
+        const sheet = wb.Sheets[sheetName];
 
-        if (!json.length) { showToast('ফাইলে কোনো ডাটা পাওয়া যায়নি!', 'error'); return; }
+        // DYNAMIC HEADER DETECTION
+        // Scan first 20 rows to find header row (contains Material Code / Parts No / Description)
+        const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        let headerRowIndex = 0;
+        for (let r = 0; r < Math.min(rawRows.length, 20); r++) {
+          const rowStr = (rawRows[r] || []).map(cell => (cell || '').toString().toLowerCase()).join(' ');
+          if (
+            rowStr.includes('material code') ||
+            rowStr.includes('parts no') ||
+            rowStr.includes('part no') ||
+            rowStr.includes('materialcode') ||
+            rowStr.includes('unrestricted stock')
+          ) {
+            headerRowIndex = r;
+            break;
+          }
+        }
 
-        showToast(`⏳ ${json.length}টি রেকর্ড প্রসেস হচ্ছে...`, 'info');
+        const json = XLSX.utils.sheet_to_json(sheet, { range: headerRowIndex });
+
+        if (!json.length) {
+          showToast('ফাইলে কোনো ডাটা পাওয়া যায়নি! ফাইল ফরম্যাট চেক করুন।', 'error');
+          if (btnStart) { btnStart.disabled = false; btnStart.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> সিঙ্ক ও আপলোড শুরু করুন'; }
+          return;
+        }
+
+        showToast(`⏳ ${json.length}টি রেকর্ড স্ক্যান ও প্রসেস করা হচ্ছে...`, 'info');
 
         // Build existing map
         const existingMap = new Map();
@@ -537,7 +585,7 @@
           if (p.partNo) existingMap.set(p.partNo.toString().trim().toUpperCase(), p);
         });
 
-        // Replace: clear first
+        // Replace: clear existing collection first
         if (importMode === 'replace') {
           const snap = await db.collection('parts').get();
           const delBatch = db.batch();
@@ -558,15 +606,22 @@
               item['Material Code'] || item['Parts No'] || item['Part No'] ||
               item.partNo || item['MaterialCode'] || ''
             ).toString().trim();
-            if (!partNoRaw || partNoRaw === 'Material Code' || partNoRaw === 'Parts No') return;
+
+            if (!partNoRaw || partNoRaw === 'Material Code' || partNoRaw === 'Parts No' || partNoRaw === 'SL.') return;
 
             const key = partNoRaw.toUpperCase();
-            const itemQty = parseInt(item['Unrestricted Stock'] || item['Qty'] || item.qty || 0) || 0;
-            const unitPrice = parseFloat(item['Sales Price (BDT)'] || item['Dealer Price (BDT)'] || item['Unit Price'] || item.unitPrice || 0) || 0;
+            const itemQty = parseInt(
+              item['Unrestricted Stock'] || item['Qty'] || item.qty || item['Stock Qty'] || 0
+            ) || 0;
+
+            const unitPrice = parseFloat(
+              item['Sales Price (BDT)'] || item['Dealer Price (BDT)'] || item['Unit Price'] || item.unitPrice || 0
+            ) || 0;
+
             const description = item['Description'] || item.description || '';
-            const store = item['Store'] || item.store || 'Moto Zone Workshop';
-            const rcvDate = item['RCV Date'] || item['Date'] || item.rcvDate || '';
-            const invoiceNo = item['Invoice/JC No'] || item['Invoice No'] || item.invoiceNo || '';
+            const store       = item['Store'] || item.store || 'Moto Zone Workshop';
+            const rcvDate     = item['RCV Date'] || item['Date'] || item.rcvDate || '';
+            const invoiceNo   = item['Invoice/JC No'] || item['Invoice No'] || item.invoiceNo || '';
 
             if (importMode === 'smart_sync' && existingMap.has(key)) {
               const existing = existingMap.get(key);
@@ -585,9 +640,14 @@
               updated++;
             } else {
               batch.set(db.collection('parts').doc(), {
-                partNo: partNoRaw, description, store,
-                qty: itemQty, unitPrice, rcvDate, invoiceNo,
-                sl: Date.now()
+                partNo: partNoRaw,
+                description: description,
+                store: store,
+                qty: itemQty,
+                unitPrice: unitPrice,
+                rcvDate: rcvDate,
+                invoiceNo: invoiceNo,
+                sl: Date.now() + Math.random()
               });
               added++;
             }
@@ -598,6 +658,34 @@
 
         let msg = '🎉 সিঙ্ক সম্পন্ন!';
         if (added)   msg += ` 🟢 ${added}টি নতুন পার্টস যুক্ত।`;
+        if (updated) msg += ` 🔄 ${updated}টি পার্টসের স্টক আপডেট (${syncQtyMethod === 'add' ? 'যোগফল' : 'সেট'} মোড)।`;
+        showToast(msg, 'success');
+
+        // Reset UI
+        STATE.selectedFile = null;
+        const boxEl = document.getElementById('importActionBox');
+        if (boxEl) boxEl.style.display = 'none';
+
+        // Automatically switch to Dashboard tab to see updated numbers!
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          if (b.dataset.tab === 'dashboard') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById('tab-dashboard')?.classList.remove('hidden');
+
+      } catch (err) {
+        console.error('Import error:', err);
+        showToast('ফাইল প্রসেসিংয়ে সমস্যা হয়েছে! ফাইলটি সঠিক Excel ফরম্যাট কি না তা চেক করুন।', 'error');
+      } finally {
+        if (btnStart) {
+          btnStart.disabled = false;
+          btnStart.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> সিঙ্ক ও আপলোড শুরু করুন';
+        }
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
         if (updated) msg += ` 🔄 ${updated}টি পার্টস আপডেট (${syncQtyMethod === 'add' ? 'যোগফল' : 'সেট'} মোড)।`;
         showToast(msg, 'success');
         if (nameEl) nameEl.textContent = '';
