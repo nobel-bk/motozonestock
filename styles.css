@@ -111,15 +111,20 @@ body {
 .top-bar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  padding: 12px 20px;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(8px);
+}
+.top-bar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 .top-bar-brand {
   display: flex;
@@ -163,9 +168,14 @@ body {
 .tab-nav {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+}
+.tab-nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
   display: flex;
   overflow-x: auto;
-  padding: 0 24px;
   gap: 8px;
   -webkit-overflow-scrolling: touch;
 }
