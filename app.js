@@ -64,7 +64,9 @@
     } else {
       document.getElementById('authGate')?.classList.remove('hidden');
       document.getElementById('mainApp')?.classList.add('hidden');
-      window.location.href = 'login.html';
+      if (!window.location.pathname.toLowerCase().endsWith('login.html')) {
+        window.location.href = 'login.html';
+      }
     }
   });
 
