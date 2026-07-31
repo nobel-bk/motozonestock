@@ -46,28 +46,32 @@
 
   <!-- TOP NAVBAR -->
   <header class="top-bar">
-    <div class="top-bar-brand">
-      <div class="brand-dot"></div>
-      <span class="brand-name">MS Moto Zone</span>
-      <span class="brand-sub">Spare Parts Manager</span>
-    </div>
-    <div class="top-bar-right">
-      <span id="userEmailDisplay" class="user-email"></span>
-      <button class="btn btn-sm btn-outline" id="btnThemeToggle" title="Theme Toggle">
-        <i class="fa-solid fa-circle-half-stroke"></i>
-      </button>
-      <button class="btn btn-sm btn-danger" id="btnLogout">
-        <i class="fa-solid fa-right-from-bracket"></i> লগআউট
-      </button>
+    <div class="top-bar-inner">
+      <div class="top-bar-brand">
+        <div class="brand-dot"></div>
+        <span class="brand-name">MS Moto Zone</span>
+        <span class="brand-sub">Spare Parts Manager</span>
+      </div>
+      <div class="top-bar-right">
+        <span id="userEmailDisplay" class="user-email"></span>
+        <button class="btn btn-sm btn-outline" id="btnThemeToggle" title="Theme Toggle">
+          <i class="fa-solid fa-circle-half-stroke"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" id="btnLogout">
+          <i class="fa-solid fa-right-from-bracket"></i> লগআউট
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- TAB NAV -->
   <nav class="tab-nav">
-    <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-gauge-high"></i> ড্যাশবোর্ড</button>
-    <button class="tab-btn" data-tab="stock"><i class="fa-solid fa-boxes-stacked"></i> স্টক তালিকা</button>
-    <button class="tab-btn" data-tab="reports"><i class="fa-solid fa-file-invoice"></i> রিপোর্ট / বিল</button>
-    <button class="tab-btn" data-tab="import"><i class="fa-solid fa-file-excel"></i> Excel Import</button>
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-gauge-high"></i> ড্যাশবোর্ড</button>
+      <button class="tab-btn" data-tab="stock"><i class="fa-solid fa-boxes-stacked"></i> স্টক তালিকা</button>
+      <button class="tab-btn" data-tab="reports"><i class="fa-solid fa-file-invoice"></i> রিপোর্ট / বিল</button>
+      <button class="tab-btn" data-tab="import"><i class="fa-solid fa-file-excel"></i> Excel Import</button>
+    </div>
   </nav>
 
   <main class="main-content">
