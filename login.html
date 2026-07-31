@@ -222,18 +222,41 @@
     const savedTheme = localStorage.getItem('MOTO_THEME') || 'light';
     document.documentElement.className = savedTheme;
 
+    const btnSubmit = document.getElementById('btnLoginSubmit');
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('emailInput').value;
-      const pass = document.getElementById('passInput').value;
+      const email = document.getElementById('emailInput').value.trim();
+      const pass  = document.getElementById('passInput').value;
       const errorMsg = document.getElementById('errorMsg');
       
       try {
         errorMsg.style.display = 'none';
-        await auth.signInWithEmailAndPassword(email, pass);
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> প্রসেস হচ্ছে...';
+        
+        try {
+          await auth.signInWithEmailAndPassword(email, pass);
+        } catch (signInErr) {
+          if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential') {
+            // Auto register manager account on first login!
+            await auth.createUserWithEmailAndPassword(email, pass);
+          } else {
+            throw signInErr;
+          }
+        }
+
         window.location.href = 'index.html';
       } catch (err) {
+        console.error('Login Error:', err);
+        let msg = 'ইমেইল বা পাসওয়ার্ড সঠিক নয়';
+        if (err.code === 'auth/weak-password') msg = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে';
+        if (err.code === 'auth/invalid-email') msg = 'সঠিক ইমেইল ঠিকানা দিন';
+        errorMsg.querySelector('span').textContent = msg;
         errorMsg.style.display = 'block';
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'লগইন করুন <i class="fa-solid fa-arrow-right"></i>';
       }
     });
   </script>
